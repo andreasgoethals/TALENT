@@ -26,7 +26,11 @@ class TensorInfo:
 
     def get_feat_shape(self) -> np.ndarray:
         if self.feat_shape is None and self.cat_sizes is not None:
-            self.feat_shape = np.asarray(self.cat_sizes).shape
+            if isinstance(self.cat_sizes, torch.Tensor):
+                arr = self.cat_sizes.cpu().numpy()
+            else:
+                arr = np.asarray(self.cat_sizes)
+            self.feat_shape = arr.shape
         return np.asarray(self.feat_shape)
         # return torch.as_tensor(self.feat_shape)
 
