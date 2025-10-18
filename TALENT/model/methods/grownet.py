@@ -76,6 +76,7 @@ class GrowNetMethod(Method):
             self.model.to_cuda()
             if not self.args.use_float:
                 self.model.to_double()
+                m.double()
             for epoch in range(training_config['epochs_per_stage']):
                 for i, (X, y) in enumerate(self.train_loader, 1):
                     if self.N is not None and self.C is not None:
