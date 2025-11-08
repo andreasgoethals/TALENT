@@ -853,7 +853,7 @@ class LabelSmoothingFitter(Fitter):
             ls_dist = y.mean(dim=-2, keepdim=True)
         else:
             n_classes = ds.tensor_infos['y'].get_n_features()
-            ls_dist = torch.ones(1, n_classes, device=ds.device) / n_classes
+            ls_dist = torch.ones(1, n_classes, device=ds.device) / int(n_classes)
         return LabelSmoothingLayer(Variable(ls_dist, trainable=False))
 
 
