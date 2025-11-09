@@ -70,8 +70,11 @@ class MitraMethod(Method):
         else:
             x_support = self.N['train']
 
-        self.x_support = torch.from_numpy(x_support).float().to(self.args.device)  # [n_support, n_feat]
-        self.y_support = torch.from_numpy(y_support).float().to(self.args.device)  # [n_support]
+        x_support = x_support.astype(np.float32)
+        y_support = y_support.astype(np.float32 if self.is_regression else np.int64)
+
+        self.x_support = torch.from_numpy(x_support).to(self.args.device)  # [n_support, n_feat]
+        self.y_support = torch.from_numpy(y_support).to(self.args.device)  # [n_support]
 
         self.construct_model()
         
