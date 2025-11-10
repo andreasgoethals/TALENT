@@ -29,7 +29,7 @@ class TabPFNClassifier(BaseEstimator, ClassifierMixin):
 
     def __init__(self, device='cpu', base_path=pathlib.Path(__file__).parent.resolve(), model_string='',
                  N_ensemble_configurations=3, no_preprocess_mode=False, multiclass_decoder='permutation',
-                 feature_shift_decoder=True, only_inference=True, seed=0, no_grad=True, batch_size_inference=32,
+                 feature_shift_decoder=True, only_inference=True, seed=0, no_grad=True, batch_size_inference=8,
                  subsample_features=False):
         """
         Initializes the classifier and loads the model. 

@@ -14,9 +14,6 @@ from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.validation import check_is_fitted
 from sklearn.preprocessing import LabelEncoder
 
-from huggingface_hub import hf_hub_download
-from huggingface_hub.utils import LocalEntryNotFoundError
-
 from .preprocessing import TransformToNumerical, EnsembleGenerator
 from .model.tabicl import InferenceConfig
 from .model.tabicl import TabICL
@@ -279,6 +276,8 @@ class TabICLClassifier(ClassifierMixin, BaseEstimator):
 
         if self.model_path is None:
             # Scenario 1: the model path is not provided, so download from HF Hub based on the checkpoint version
+            from huggingface_hub import hf_hub_download
+            from huggingface_hub.utils import LocalEntryNotFoundError
             try:
                 model_path_ = Path(hf_hub_download(repo_id=repo_id, filename=filename, local_files_only=True))
             except LocalEntryNotFoundError:
@@ -301,6 +300,7 @@ class TabICLClassifier(ClassifierMixin, BaseEstimator):
                 checkpoint = torch.load(model_path_, map_location="cpu", weights_only=True)
             else:
                 # Scenario 2b: the model path does not exist, download the checkpoint version to this path
+                from huggingface_hub import hf_hub_download
                 if self.allow_auto_download:
                     print(info_message)
                     print(

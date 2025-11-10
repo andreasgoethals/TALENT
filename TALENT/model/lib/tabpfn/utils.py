@@ -159,11 +159,9 @@ def load_model_workflow(i, e, add_name, base_path, device='cpu', eval_addition='
         """
         Returns the different paths of model_file, model_path and results_file
         """
-        model_file = f'models_diff/prior_diff_real_checkpoint{add_name}_n_{i}_epoch_{e}.cpkt'
+        model_file = f'models_tabpfn/prior_diff_real_checkpoint{add_name}_n_{i}_epoch_{e}.cpkt'
         model_path = os.path.join(base_path, model_file)
-        # print('Evaluate ', model_path)
-        results_file = os.path.join(base_path,
-                                    f'models_diff/prior_diff_real_results{add_name}_n_{i}_epoch_{e}_{eval_addition}.pkl')
+        results_file = os.path.join(base_path, f'models_tabpfn/prior_diff_real_results{add_name}_n_{i}_epoch_{e}_{eval_addition}.pkl')
         return model_file, model_path, results_file
 
     def check_file(e):
@@ -173,9 +171,7 @@ def load_model_workflow(i, e, add_name, base_path, device='cpu', eval_addition='
             print('It has about 100MB, so this might take a moment.')
             import requests
             url = 'https://github.com/PriorLabs/TabPFN/raw/refs/tags/v1.0.0/tabpfn/models_diff/prior_diff_real_checkpoint_n_0_epoch_42.cpkt'
-            print('hhh')
             r = requests.get(url, allow_redirects=True)
-            print('hhh')
             os.makedirs(os.path.dirname(model_path), exist_ok=True)
             open(model_path, 'wb').write(r.content)
         return model_file, model_path, results_file
