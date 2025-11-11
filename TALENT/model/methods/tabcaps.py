@@ -95,16 +95,19 @@ class TabCapsMethod(Method):
             batch_size=self.args.batch_size, virtual_batch_size=256,
             device_id=self.args.gpu
         )
-        time_cost = time.time() - tic
+        self.fit_time = time.time() - tic
         self.model.save_check(self.args.save_path, self.args.seed)
         self.trlog['best_res'] = self.model.best_cost
-        return time_cost
 
     def predict(self, data, info, model_name):
         N,C,y = data
         self.model.load_model(osp.join(self.args.save_path, 'epoch-last-{}.pth'.format(self.args.seed)),input_dim=self.d_in, output_dim=self.d_out)
         self.data_format(False, N, C, y)
+        
+        tic = time.time()
         test_label, test_logit, _ = self.model.predict(self.N_test, self.y_test)
+        self.predict_time = time.time() - tic
+        
         vl = self.criterion(torch.tensor(test_logit), torch.tensor(test_label)).item()     
         vres, metric_name = self.metric(test_logit, test_label, self.y_info)
         print('Test: loss={:.4f}'.format(vl))

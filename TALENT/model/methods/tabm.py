@@ -80,8 +80,8 @@ class TabMMethod(Method):
         self.model.eval()
 
         self.data_format(False, N, C, y)
-
         
+        tic = time.time()
         test_logit, test_label = [], []
         with torch.no_grad():
             for i, (X, y) in tqdm(enumerate(self.test_loader)):
@@ -96,6 +96,7 @@ class TabMMethod(Method):
                 pred = pred.mean(1)
                 test_logit.append(pred)
                 test_label.append(y)
+        self.predict_time = time.time() - tic
                 
         test_logit = torch.cat(test_logit, 0)
         test_label = torch.cat(test_label, 0)
@@ -107,7 +108,6 @@ class TabMMethod(Method):
         print('Test: loss={:.4f}'.format(vl))
         for name, res in zip(metric_name, vres):
             print('[{}]={:.4f}'.format(name, res))
-
         
         return vl, vres, metric_name, test_logit
 

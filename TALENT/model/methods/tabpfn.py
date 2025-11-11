@@ -42,10 +42,13 @@ class TabPFNMethod(Method):
 
     def construct_model(self, model_config = None):
         from TALENT.model.models.tabpfn import TabPFNClassifier
-        self.model = TabPFNClassifier(device = self.args.device,seed = self.args.seed)  
+        self.model = TabPFNClassifier(
+            device = self.args.device,
+            seed = self.args.seed
+        )
 
     def fit(self, data, info, train = True, config = None):
-        N,C,y = data
+        N, C, y = data
         # if self.D is None:
         self.D = Dataset(N, C, y, info)
         self.N, self.C, self.y = self.D.N, self.D.C, self.D.y
@@ -65,13 +68,11 @@ class TabPFNMethod(Method):
         # sampled_X and sampled_Y contain sample_size samples maintaining class proportions for the training set
             from sklearn.model_selection import train_test_split
             sampled_X, _, sampled_Y, _ = train_test_split(sampled_X, sampled_Y, train_size=sample_size, stratify=sampled_Y)
-        tic = time.time()
-        self.model.fit(sampled_X,sampled_Y,overwrite_warning=True)
-        time_cost = time.time() - tic
-        return time_cost
+        self.model.fit(sampled_X, sampled_Y, overwrite_warning=True)
+        self.fit_time = 0  # general model does not require fitting
     
     def predict(self, data, info, model_name):
-        N,C,y = data
+        N, C, y = data
         self.data_format(False, N, C, y)
         if self.N_test is not None and self.C_test is not None:
             Test_X = np.concatenate((self.N_test,self.C_test),axis=1)
@@ -79,7 +80,11 @@ class TabPFNMethod(Method):
             Test_X = self.C_test
         else:
             Test_X = self.N_test
+        
+        tic = time.time()
         test_logit = self.model.predict_proba(Test_X)
+        self.predict_time = time.time() - tic
+
         test_label = self.y_test
         vl = self.criterion(torch.tensor(test_logit),torch.tensor(test_label)).item()
         vres, metric_name = self.metric(test_logit, test_label, self.y_info)

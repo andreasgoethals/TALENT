@@ -25,6 +25,7 @@ from TALENT.model.lib.data import (
     get_categories
 )
 
+
 def check_softmax(logits):
     """
     Check if the logits are already probabilities, and if not, convert them to probabilities.
@@ -38,6 +39,7 @@ def check_softmax(logits):
         return exps / np.sum(exps, axis=1, keepdims=True)
     else:
         return logits
+
 
 class Method(object, metaclass=abc.ABCMeta):
     def __init__(self, args, is_regression):
@@ -66,6 +68,7 @@ class Method(object, metaclass=abc.ABCMeta):
 
         self.args.device = get_device()
 
+
     def reset_stats_withconfig(self, config):
         """
         Reset the training statistics with a new configuration.
@@ -88,6 +91,7 @@ class Method(object, metaclass=abc.ABCMeta):
             self.trlog['best_res'] = 1e10
         else:
             self.trlog['best_res'] = 0
+
 
     def data_format(self, is_train = True, N = None, C = None, y = None):
         """
@@ -136,10 +140,9 @@ class Method(object, metaclass=abc.ABCMeta):
         :param info: dict, information about the data
         :param train: bool, whether to train the method
         :param config: dict, configuration for the method
-        :return: float, time cost
         """
         # if the method already fit the dataset, skip these steps (such as the hyper-tune process)
-        N,C,y = data
+        N, C, y = data
         self.D = Dataset(N, C, y, info)
         self.N, self.C, self.y = self.D.N, self.D.C, self.D.y
         self.is_binclass, self.is_multiclass, self.is_regression = self.D.is_binclass, self.D.is_multiclass, self.D.is_regression
@@ -171,7 +174,8 @@ class Method(object, metaclass=abc.ABCMeta):
             dict(params=self.model.state_dict()),
             osp.join(self.args.save_path, 'epoch-last-{}.pth'.format(str(self.args.seed)))
         )
-        return time_cost
+        self.fit_time = time_cost
+
 
     def predict(self, data, info, model_name):
         """
@@ -182,15 +186,15 @@ class Method(object, metaclass=abc.ABCMeta):
         :param model_name: str, name of the model
         :return: tuple, (loss, metric, metric_name, predictions)
         """
-        N,C,y = data
+        N, C, y = data
         self.model.load_state_dict(torch.load(osp.join(self.args.save_path, model_name + '-{}.pth'.format(str(self.args.seed))))['params'])
         print('best epoch {}, best val res={:.4f}'.format(self.trlog['best_epoch'], self.trlog['best_res']))
+        
         ## Evaluation Stage
         self.model.eval()
-
         self.data_format(False, N, C, y)
-
         
+        tic = time.time()
         test_logit, test_label = [], []
         with torch.no_grad():
             for i, (X, y) in tqdm(enumerate(self.test_loader)):
@@ -205,20 +209,21 @@ class Method(object, metaclass=abc.ABCMeta):
 
                 test_logit.append(pred)
                 test_label.append(y)
-                
+        
+        self.predict_time = time.time() - tic
+        
         test_logit = torch.cat(test_logit, 0)
         test_label = torch.cat(test_label, 0)
         
         vl = self.criterion(test_logit, test_label).item()     
-
         vres, metric_name = self.metric(test_logit, test_label, self.y_info)
 
         print('Test: loss={:.4f}'.format(vl))
         for name, res in zip(metric_name, vres):
             print('[{}]={:.4f}'.format(name, res))
-
         
         return vl, vres, metric_name, test_logit
+
 
     def train_epoch(self, epoch):
         """
@@ -250,6 +255,7 @@ class Method(object, metaclass=abc.ABCMeta):
             del loss
         tl = tl.item()
         self.trlog['train_loss'].append(tl)    
+
 
     def validate(self, epoch):
         """
@@ -292,7 +298,6 @@ class Method(object, metaclass=abc.ABCMeta):
 
         vres, metric_name = self.metric(test_logit, test_label, self.y_info)
 
-
         print('epoch {}, val, loss={:.4f} {} result={:.4f}'.format(epoch, vl, task_type, vres[0]))
         if measure(vres[0], self.trlog['best_res']) or epoch == 0:
             self.trlog['best_res'] = vres[0]
@@ -307,6 +312,7 @@ class Method(object, metaclass=abc.ABCMeta):
             if self.val_count > 20:
                 self.continue_training = False
         torch.save(self.trlog, osp.join(self.args.save_path, 'trlog'))   
+
 
     def metric(self, predictions, labels, y_info):
         """

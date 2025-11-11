@@ -51,7 +51,7 @@ class TabPFNMethod(Method):
                 n_estimators = 8,
                 ignore_pretraining_limits = True,
                 categorical_features_indices = cat_indices
-            )            
+            )
         else:
             from TALENT.model.models.tabpfn_v2 import TabPFNClassifier
             self.model = TabPFNClassifier(
@@ -65,13 +65,13 @@ class TabPFNMethod(Method):
 
 
     def fit(self, data, info, train = True, config = None):
-        N,C,y = data
+        N, C, y = data
         # if self.D is None:
         self.D = Dataset(N, C, y, info)
         self.N, self.C, self.y = self.D.N, self.D.C, self.D.y
         self.is_binclass, self.is_multiclass, self.is_regression = self.D.is_binclass, self.D.is_multiclass, self.D.is_regression
         self.data_format(is_train = True)
-
+        
         sampled_Y = self.y['train']
         cat_indices = []
         if self.N is not None and self.C is not None:
@@ -85,34 +85,32 @@ class TabPFNMethod(Method):
         sample_size = self.args.config['general']['sample_size']
         self.sampled_X = sampled_X
         self.sampled_Y = sampled_Y
-        tic = time.time()
         self.construct_model(cat_indices=cat_indices)
         self.model.fit(sampled_X,sampled_Y,sample_size)
-        time_cost = time.time() - tic
-        return time_cost
+        self.fit_time = 0  # general model does not require fitting
 
 
     def predict(self, data, info, model_name):
-        import time
-        start_time = time.time()
-        N,C,y = data
+        N, C, y = data
         self.data_format(False, N, C, y)
         if self.N_test is not None and self.C_test is not None:
-            Test_X = np.concatenate((self.N_test,self.C_test),axis=1)
+            Test_X = np.concatenate((self.N_test, self.C_test), axis=1)
         elif self.N_test is None and self.C_test is not None:
             Test_X = self.C_test
         else:
             Test_X = self.N_test
         
+        tic = time.time()
         if self.is_regression:
             test_logit = self.model.predict(Test_X)
         else:
             test_logit = self.model.predict_proba(Test_X)
+        self.predict_time = time.time() - tic
+        
         test_label = self.y_test
-        vl = self.criterion(torch.tensor(test_logit),torch.tensor(test_label)).item()
+        vl = self.criterion(torch.tensor(test_logit), torch.tensor(test_label)).item()
         vres, metric_name = self.metric(test_logit, test_label, self.y_info)
         print('Test: loss={:.4f}'.format(vl))
         for name, res in zip(metric_name, vres):
             print('[{}]={:.4f}'.format(name, res))
-        print('Time cost: {:.4f}s'.format(time.time() - start_time))
         return vl, vres, metric_name, test_logit

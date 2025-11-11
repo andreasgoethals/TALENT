@@ -74,16 +74,15 @@ class TabICLMethod(Method):
                 n_jobs=None,                      # number of threads to use for PyTorch
                 verbose=False,                    # print progress messages
                 inference_config=None,            # inference configuration for fine-grained control
-            )              
+            )
 
     def fit(self, data, info, train = True, config = None):
-        N,C,y = data
+        N, C, y = data
         self.D = Dataset(N, C, y, info)
         self.N, self.C, self.y = self.D.N, self.D.C, self.D.y
         self.is_binclass, self.is_multiclass, self.is_regression = self.D.is_binclass, self.D.is_multiclass, self.D.is_regression
         self.data_format(is_train = True)
         
-
         sampled_Y = self.y['train']
         cat_indices = []
         if self.N is not None and self.C is not None:
@@ -96,16 +95,12 @@ class TabICLMethod(Method):
             sampled_X = self.N['train']
         self.sampled_X = sampled_X#[:sample_size]
         self.sampled_Y = sampled_Y# [:sample_size]
-        tic = time.time()
         self.construct_model(cat_indices=cat_indices)
         self.model.fit(self.sampled_X,self.sampled_Y)
-        time_cost = time.time() - tic
-        return time_cost
-    
+        self.fit_time = 0  # general model does not require fitting
+
     def predict(self, data, info, model_name):
-        import time
-        start_time = time.time()
-        N,C,y = data
+        N, C, y = data
         self.data_format(False, N, C, y)
         if self.N_test is not None and self.C_test is not None:
             Test_X = np.concatenate((self.N_test,self.C_test),axis=1)
@@ -113,11 +108,14 @@ class TabICLMethod(Method):
             Test_X = self.C_test
         else:
             Test_X = self.N_test
-        
+
+        tic = time.time()
         if self.is_regression:
             test_logit = self.model.predict(Test_X)
         else:
             test_logit = self.model.predict_proba(Test_X)
+        self.predict_time = time.time() - tic
+        
         test_logit = test_logit.astype(np.float32)
         test_label = self.y_test
         vl = self.criterion(torch.tensor(test_logit),torch.tensor(test_label)).item()
@@ -125,6 +123,4 @@ class TabICLMethod(Method):
         print('Test: loss={:.4f}'.format(vl))
         for name, res in zip(metric_name, vres):
             print('[{}]={:.4f}'.format(name, res))
-        print('Time cost: {:.4f}s'.format(time.time() - start_time))
         return vl, vres, metric_name, test_logit
-

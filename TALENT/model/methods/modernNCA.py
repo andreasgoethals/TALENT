@@ -128,7 +128,7 @@ class ModernNCAMethod(Method):
             dict(params=self.model.state_dict()),
             osp.join(self.args.save_path, 'epoch-last-{}.pth'.format(str(self.args.seed)))
         )
-        return time_cost
+        self.fit_time = time_cost
 
 
     def predict(self, data, info, model_name):
@@ -140,6 +140,7 @@ class ModernNCAMethod(Method):
         
         self.data_format(False, N, C, y)
         
+        tic = time.time()
         test_logit, test_label = [], []
         with torch.no_grad():
             for i, (X, y) in tqdm(enumerate(self.test_loader)):
@@ -177,10 +178,11 @@ class ModernNCAMethod(Method):
                 
                 test_logit.append(pred)
                 test_label.append(y)
-                
+        self.predict_time = time.time() - tic
+
         test_logit = torch.cat(test_logit, 0)
         test_label = torch.cat(test_label, 0)
-        
+
         vl = self.criterion(test_logit, test_label).item()     
         vres, metric_name = self.metric(test_logit, test_label, self.y_info)
 

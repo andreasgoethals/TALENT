@@ -69,7 +69,7 @@ class MitraMethod(Method):
             x_support = self.C['train']
         else:
             x_support = self.N['train']
-
+        
         x_support = x_support.astype(np.float32)
         y_support = y_support.astype(np.float32 if self.is_regression else np.int64)
 
@@ -77,12 +77,10 @@ class MitraMethod(Method):
         self.y_support = torch.from_numpy(y_support).to(self.args.device)  # [n_support]
 
         self.construct_model()
-        
-        return 0
+        self.fit_time = 0  # general model does not require fitting
 
 
     def predict(self, data, info, model_name):
-        start_time = time.time()
         N, C, y = data
         self.data_format(False, N, C, y)
         
@@ -110,6 +108,7 @@ class MitraMethod(Method):
         
         results = []
         self.model.eval()
+        tic = time.time()
         with torch.no_grad():
             for start in range(0, n_obs_query, max_samples_query):
                 end = min(start + max_samples_query, n_obs_query)
@@ -136,6 +135,7 @@ class MitraMethod(Method):
                 ) # [1, batch_n_query, n_classes]
 
                 results.append(test_logit.squeeze(0))
+        self.predict_time = time.time() - tic
 
         test_logit = torch.cat(results, dim=0).cpu()
         if not self.is_regression:
@@ -150,5 +150,4 @@ class MitraMethod(Method):
         print('Test: loss={:.4f}'.format(vl))
         for name, res in zip(metric_name, vres):
             print('[{}]={:.4f}'.format(name, res))
-        print('Time cost: {:.4f}s'.format(time.time() - start_time))
         return vl, vres, metric_name, test_logit

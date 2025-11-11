@@ -120,7 +120,7 @@ class SwitchTabMethod(Method):
             dict(params=self.model.state_dict()),
             osp.join(self.args.save_path, 'epoch-last-{}.pth'.format(str(self.args.seed)))
         )
-        return time_cost
+        self.fit_time = time_cost
 
     def train_epoch(self, epoch):
         from TALENT.model.models.switchtab import feature_corruption

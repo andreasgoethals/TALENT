@@ -62,10 +62,8 @@ class HyperFastMethod(Method):
         else:
             sampled_X = self.N['train']
             cat_features = []
-        tic = time.time()
         self.model.fit(sampled_X, sampled_Y, cat_features)
-        time_cost = time.time() - tic
-        return time_cost
+        self.fit_time = 0  # general model does not require fitting
     
     def predict(self, data, info, model_name):
         N, C, y = data
@@ -76,7 +74,11 @@ class HyperFastMethod(Method):
             Test_X = self.C_test
         else:
             Test_X = self.N_test
+        
+        tic = time.time()
         test_logit = self.model.predict_proba(Test_X)
+        self.predict_time = time.time() - tic
+        
         test_label = self.y_test
         vl = self.criterion(torch.tensor(test_logit, dtype=torch.double),torch.tensor(test_label, dtype=torch.long)).item()
         vres, metric_name = self.metric(test_logit, test_label, self.y_info)

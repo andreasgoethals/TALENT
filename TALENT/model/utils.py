@@ -278,9 +278,9 @@ def get_classical_args():
     parser.add_argument('--dataset', type=str, default=default_args['dataset'])
     parser.add_argument('--model_type', type=str,
                         default=default_args['model_type'],
-                        choices=['LogReg', 'NCM', 'RandomForest',
-                                 'xgboost', 'catboost', 'lightgbm',
-                                 'svm', 'knn', 'NaiveBayes', "dummy", "LinearRegression"
+                        choices=['dummy', 'LogReg', 'LinearRegression', 
+                                 'xgboost', 'catboost', 'lightgbm', 'RandomForest',
+                                 'svm', 'knn', 'NCM', 'NaiveBayes', 'rfm', 'xrfm',
                                  ])
 
     # optimization parameters 
@@ -507,8 +507,12 @@ def show_results(args, info, metric_name, loss_list, results_list, time_list):
         for idx, name in enumerate(metric_name):
             metric_arrays[name].append(result[idx])
 
-    metric_arrays['Time'] = time_list
-    metric_name = metric_name + ('Time',)
+    fit_times, predict_times = zip(*time_list)
+    total_times = [f + p for f, p in time_list]
+    metric_arrays['Fit_Time'] = fit_times
+    metric_arrays['Inference_Time'] = predict_times
+    metric_arrays['Total_Time'] = total_times
+    metric_name = metric_name + ('Fit_Time', 'Inference_Time', 'Total_Time')
 
     mean_metrics = {name: np.mean(metric_arrays[name]) for name in metric_name}
     std_metrics = {name: np.std(metric_arrays[name]) for name in metric_name}
@@ -871,6 +875,12 @@ def get_method(model):
     elif model == 'NaiveBayes':
         from TALENT.model.classical_methods.naivebayes import NaiveBayesMethod
         return NaiveBayesMethod
+    elif model == 'rfm':
+        from TALENT.model.classical_methods.rfm import RFMMethod
+        return RFMMethod
+    elif model == 'xrfm':
+        from TALENT.model.classical_methods.xrfm import XRFMMethod
+        return XRFMMethod
 
     # General methods
     
@@ -895,12 +905,9 @@ def get_method(model):
     elif model == 'mitra':
         from TALENT.model.methods.mitra import MitraMethod
         return MitraMethod
-    elif model == 'xrfm':
-        from TALENT.model.classical_methods.xrfm import XRFMMethod
-        return XRFMMethod
     elif model == 'limix':
         from TALENT.model.methods.limix import LimiXMethod
         return LimiXMethod
-
+    
     else:
         raise NotImplementedError("Model \"" + model + "\" not yet implemented")

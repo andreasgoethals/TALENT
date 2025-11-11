@@ -45,7 +45,6 @@ class PTARLMethod(Method):
         self.is_binclass, self.is_multiclass, self.is_regression = self.D.is_binclass, self.D.is_multiclass, self.D.is_regression
         self.n_num_features, self.n_cat_features = self.D.n_num_features, self.D.n_cat_features
         
-        
         if config is not None:
             self.reset_stats_withconfig(config)
         self.data_format(is_train = True)
@@ -70,11 +69,10 @@ class PTARLMethod(Method):
                                          self.args.model_type+'_ot', self.args.config, self.args.config['model']['regularize'], 
                                          self.is_regression, self.args.config['general']['ot_weight'], self.args.config['general']['diversity_weight'], 
                                          self.args.config['general']['r_weight'], self.args.config['general']['diversity'],self.args.seed, self.args.save_path)
-        time_cost = time.time() - tic
+        self.fit_time = time.time() - tic
         self.model = best_model
         self.trlog['best_res'] = best_loss
-        return time_cost
-        
+
     def predict(self, data, info, model_name):
         N,C,y = data
         self.model_type1 = self.args.model_type + '_ot'
@@ -84,10 +82,11 @@ class PTARLMethod(Method):
         self.model.eval()
         self.data_format(False, N, C, y)
 
+        tic = time.time()
         test_logit,test_label = test(self.model, self.test_loader,self.args)
+        self.predict_time = time.time() - tic
         
-        vl = self.criterion(torch.tensor(test_logit), torch.tensor(test_label)).item()     
-
+        vl = self.criterion(torch.tensor(test_logit), torch.tensor(test_label)).item()
         vres, metric_name = self.metric(test_logit, test_label, self.y_info)
 
         print('Test: loss={:.4f}'.format(vl))

@@ -148,7 +148,7 @@ class GRANDEMethod(Method):
             dict(params=self.model.state_dict()),
             osp.join(self.args.save_path, 'epoch-last-{}.pth'.format(str(self.args.seed)))
         )
-        return time_cost
+        self.fit_time = time_cost
 
     def predict(self, data, info, model_name):
         N, C, y = data
@@ -170,12 +170,10 @@ class GRANDEMethod(Method):
             X_test = np.concatenate((np.array(self.C_test), np.array(self.N_test)), axis=1)
         
         y_test = np.array(self.y_test)
-        
-        # X_test = self.model.apply_preprocessing(X_test)
-        
         test_dataset = TensorDataset(torch.tensor(X_test, dtype=torch.float64), torch.tensor(y_test, dtype=torch.float64))
         self.test_loader = DataLoader(test_dataset, batch_size=1024, shuffle=False, drop_last=False)
         
+        tic = time.time()
         test_logit, test_label = [], []
         with torch.no_grad():
             for i, (X, y) in tqdm(enumerate(self.test_loader)):
@@ -183,8 +181,7 @@ class GRANDEMethod(Method):
                 pred = self.model(X)
                 test_logit.append(pred)
                 test_label.append(y)
-        
-        # print(f'[DEBUG 318] {test_logit=}, {test_label=}')
+        self.predict_time = time.time() - tic
 
         test_logit = torch.cat(test_logit, 0)
         test_label = torch.cat(test_label, 0)
@@ -194,8 +191,6 @@ class GRANDEMethod(Method):
         
         if self.is_binclass:
             test_logit = np.stack([-test_logit.cpu().squeeze(), test_logit.cpu().squeeze()], axis=-1)
-        # elif self.is_regression:
-        #     test_logit = test_logit * self.model.std + self.model.mean
 
         vres, metric_name = self.metric(test_logit, test_label, self.y_info)
 

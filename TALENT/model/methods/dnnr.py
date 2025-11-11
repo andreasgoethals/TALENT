@@ -64,7 +64,6 @@ class DNNRMethod(Method):
         self.is_binclass, self.is_multiclass, self.is_regression = self.D.is_binclass, self.D.is_multiclass, self.D.is_regression
         self.n_num_features, self.n_cat_features = self.D.n_num_features, self.D.n_cat_features
         
-        
         if config:
             self.reset_stats_withconfig(config)
         self.data_format(is_train = True)
@@ -74,6 +73,7 @@ class DNNRMethod(Method):
 
         tic = time.time()
         self.model.fit(np.array(self.N['train']), np.array(self.y['train']))
+        self.fit_time = time.time() - tic
         
         test_logit = self.model.predict(np.array(self.N['val']))
         test_label = self.y['val']
@@ -82,9 +82,7 @@ class DNNRMethod(Method):
         test_label = torch.from_numpy(test_label)
         
         vres, metric_name = self.metric(test_logit, test_label, self.y_info)
-        time_cost = time.time() - tic
         self.trlog['best_res'] = vres[0]
-        return time_cost
 
 
     def predict(self, data, info, model_name):
@@ -92,10 +90,11 @@ class DNNRMethod(Method):
         print('best epoch {}, best val res={:.4f}'.format(self.trlog['best_epoch'], self.trlog['best_res']))
         
         self.data_format(False, N, C, y)
-        
         assert(self.C_test is None and self.N_test is not None)
 
+        tic = time.time()
         test_logit = self.model.predict(np.array(self.N_test))
+        self.predict_time = time.time() - tic
         test_label = self.y_test
     
         test_logit = torch.from_numpy(test_logit)

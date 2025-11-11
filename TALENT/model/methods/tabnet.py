@@ -64,7 +64,7 @@ class TabNetMethod(Method):
         self.criterion = F.cross_entropy if not self.is_regression else F.mse_loss
 
     def fit(self, data, info, train = True, config = None):
-        N,C,y = data
+        N, C, y = data
         # if the method already fit the dataset, skip these steps (such as the hyper-tune process)
         self.D = Dataset(N, C, y, info)
         self.N, self.C, self.y = self.D.N, self.D.C, self.D.y
@@ -103,31 +103,32 @@ class TabNetMethod(Method):
             device=f'cuda:0',
             task=task
         )
-        time_cost = time.time() - tic
+        self.fit_time = time.time() - tic
         self.model.save_model(self.args.save_path)
         self.trlog['best_res'] = self.model.best_cost
         if self.is_regression:
             self.trlog['best_res'] = self.model.best_cost * self.y_info['std']
-        return time_cost
     
     def predict(self, data, info, model_name):
-        N,C,y = data
-        self.model.load_model(self.args.save_path,self.args.seed)
+        N, C, y = data
+        self.model.load_model(self.args.save_path, self.args.seed)
         self.data_format(False, N, C, y)
+        
+        tic = time.time()
         if self.is_regression:
             task_type = "regression"
             test_logit = self.model.predict(self.N_test)
         else:
             task_type = "classification"
             test_logit = self.model.predict_proba(self.N_test)
+        self.predict_time = time.time() - tic
+        
         test_label = self.y_test
-        vl = self.criterion(torch.tensor(test_logit), torch.tensor(test_label)).item()     
-
+        vl = self.criterion(torch.tensor(test_logit), torch.tensor(test_label)).item()
         vres, metric_name = self.metric(test_logit, test_label, self.y_info)
 
         print('Test: loss={:.4f}'.format(vl))
         for name, res in zip(metric_name, vres):
             print('[{}]={:.4f}'.format(name, res))
 
-        
         return vl, vres, metric_name, test_logit

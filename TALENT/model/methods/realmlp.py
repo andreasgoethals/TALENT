@@ -113,6 +113,7 @@ class RealMLPMethod(Method):
 
         tic = time.time()
         self.model.fit(X_train_and_val, y_train_and_val, val_idxs=val_idxs, cat_features=cat_features)
+        self.fit_time = time.time() - tic
         
         test_logit = self.model.predict(X_val)
         test_label = self.y['val']
@@ -121,9 +122,7 @@ class RealMLPMethod(Method):
         test_label = torch.from_numpy(test_label)
         
         vres, metric_name = self.metric(test_logit, test_label, self.y_info)
-        time_cost = time.time() - tic
         self.trlog['best_res'] = vres[0]
-        return time_cost
 
 
     def predict(self, data, info, model_name):
@@ -142,7 +141,9 @@ class RealMLPMethod(Method):
             assert self.C_test is not None and self.N_test is not None
             X_test = np.concatenate((np.array(self.C_test), np.array(self.N_test)), axis=1)
 
+        tic = time.time()
         test_logit = self.model.predict(X_test)
+        self.predict_time = time.time() - tic
         test_label = self.y_test
     
         test_logit = torch.from_numpy(test_logit)

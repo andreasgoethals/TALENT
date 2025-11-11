@@ -110,7 +110,7 @@ class TabPTMMethod(Method):
             self.model.double()
 
     def fit(self, data, info, train = True, config = None):
-        N,C,y = data
+        N, C, y = data
         self.D = Dataset(N, C, y, info)
         self.N, self.C, self.y = self.D.N, self.D.C, self.D.y
         self.is_binclass, self.is_multiclass, self.is_regression = self.D.is_binclass, self.D.is_multiclass, self.D.is_regression
@@ -139,15 +139,17 @@ class TabPTMMethod(Method):
             dict(params=self.model.state_dict()),
             osp.join(self.args.save_path, 'epoch-last-{}.pth'.format(str(self.args.seed)))
         )
-        return time_cost
+        self.fit_time = time_cost
     
     def predict(self, data, info, model_name):
-        N,C,y = data
+        N, C, y = data
         self.model.load_state_dict(torch.load(osp.join(self.args.save_path, model_name + '-{}.pth'.format(str(self.args.seed))))['params'])
         print('best epoch {}, best val res={:.4f}'.format(self.trlog['best_epoch'], self.trlog['best_res']))
         ## Evaluation Stage
         self.model.eval()
         self.data_format(False, N, C, y)
+
+        tic = time.time()
         test_logit, test_label = [], []
         with torch.no_grad():
             for i, (X, y) in tqdm(enumerate(self.test_loader)):
@@ -159,18 +161,17 @@ class TabPTMMethod(Method):
                 pred = self.model(X_meta)                
                 test_logit.append(pred)
                 test_label.append(y)
-                
+        self.predict_time = time.time() - tic
+        
         test_logit = torch.cat(test_logit, 0)
         test_label = torch.cat(test_label, 0)
         
-        vl = self.criterion(test_logit, test_label).item()     
-
+        vl = self.criterion(test_logit, test_label).item()
         vres, metric_name = self.metric(test_logit, test_label, self.y_info)
 
         print('Test: loss={:.4f}'.format(vl))
         for name, res in zip(metric_name, vres):
             print('[{}]={:.4f}'.format(name, res))
-
         
         return vl, vres, metric_name, test_logit
 
