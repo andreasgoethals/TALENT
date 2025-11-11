@@ -21,22 +21,22 @@ from sklearn.preprocessing import OrdinalEncoder
 from sklearn.utils.multiclass import check_classification_targets
 from torch import nn
 
-from TALENT.model.lib.pfn_v2.tabpfn.constants import (
+from .constants import (
     DEFAULT_NUMPY_PREPROCESSING_DTYPE,
     REGRESSION_NAN_BORDER_LIMIT_LOWER,
     REGRESSION_NAN_BORDER_LIMIT_UPPER,
 )
-from TALENT.model.lib.pfn_v2.tabpfn.model.bar_distribution import FullSupportBarDistribution
-from TALENT.model.lib.pfn_v2.tabpfn.model.loading import download_model, load_model
+from .model.bar_distribution import FullSupportBarDistribution
+from .model.loading import download_model, load_model
 
 if TYPE_CHECKING:
     from sklearn.base import TransformerMixin
     from sklearn.pipeline import Pipeline
 
-    from TALENT.model.lib.pfn_v2.tabpfn.classifier import TabPFNClassifier, XType, YType
-    from TALENT.model.lib.pfn_v2.tabpfn.model.config import InferenceConfig
-    from TALENT.model.lib.pfn_v2.tabpfn.model.transformer import PerFeatureTransformer
-    from TALENT.model.lib.pfn_v2.tabpfn.regressor import TabPFNRegressor
+    from .classifier import TabPFNClassifier, XType, YType
+    from .model.config import InferenceConfig
+    from .model.transformer import PerFeatureTransformer
+    from .regressor import TabPFNRegressor
 
 MAXINT_RANDOM_SEED = int(np.iinfo(np.int32).max)
 
@@ -317,6 +317,8 @@ def load_model_criterion_config(
         model_path = Path(model_path)
         model_dir = model_path.parent
         model_name = model_path.name
+
+    print(f"Loading model from {model_path}...")
 
     model_dir.mkdir(parents=True, exist_ok=True)
     if not model_path.exists():

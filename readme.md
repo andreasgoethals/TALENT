@@ -73,6 +73,7 @@ Welcome to **TALENT**, a benchmark with a comprehensive machine learning toolbox
 
 ## 📰 What's New
 
+- [2025-11]🌟 Add [Real-TabPFN](https://arxiv.org/abs/2507.03971).
 - [2025-11]🌟 Add [LimiX](https://github.com/limix-ldm/LimiX).
 - [2025-08]🌟 Add [Mitra](https://www.amazon.science/blog/mitra-mixed-synthetic-priors-for-enhancing-tabular-foundation-models).
 - [2025-06]🌟 Add [TabAutoPNPNet](https://www.mdpi.com/2079-9292/14/6/1165) (Electronics 2025).
@@ -138,6 +139,8 @@ TALENT integrates an extensive array of 30+ deep learning architectures for tabu
 35. **[TabAutoPNPNet](https://www.mdpi.com/2079-9292/14/6/1165)**: A tabular model based on periodicity, particularly the Fourier transform and Chebyshev polynomials, with performance on par with or superior to FT-Transformer. 
 36. **[Mitra](https://www.amazon.science/blog/mitra-mixed-synthetic-priors-for-enhancing-tabular-foundation-models)**: A tabular foundation model learned with mixed synthetic priors.
 37. **[LimiX](https://github.com/limix-ldm/LimiX)**: A tabular foundation model that leverages transformers to support a wide range of tasks, from prediction to imputation and causal inference, within a unified architecture.
+38. **[Real-TabPFN](https://arxiv.org/abs/2507.03971)**: An enhanced tabular foundation model that extends TabPFNv2 through continued pre-training on real-world datasets for classification tasks. 
+
 
 🔧 If you want to check the **default hyperparameters and hyperparameter search spaces** of all methods, please visit:  
 👉 [https://6sy666.github.io/TALENT-Configs/](https://6sy666.github.io/TALENT-Configs/)
@@ -214,7 +217,7 @@ cd TALENT/test
     ```
     for classical methods.	
 
-### 🛠️How to Add New Methods
+### 🛠️ How to Add New Methods
 
 For methods like the MLP class that only need to design the model, you only need to:
 
@@ -244,7 +247,7 @@ conda install faiss-gpu -c pytorch
 
 Datasets are available at [Google Drive](https://drive.google.com/drive/folders/1j1zt3zQIo8dO6vkO-K-WE6pSrl71bf0z?usp=drive_link).
 
-### 📂How to Place Datasets
+### 📂 How to Place Datasets
 
 Datasets are placed in the project's current directory, corresponding to the file name specified by `args.dataset_path`. For instance, if the project is `LAMDA-TALENT`, the data should be placed in `LAMDA-TALENT/args.dataset_path/args.dataset`.
 
@@ -258,7 +261,6 @@ Each dataset folder `args.dataset` consists of:
 
 - `info.json`, which must include the following three contents (task_type can be "regression", "multiclass" or "binclass"):
   
-
   ```json
   {
     "task_type": "regression", 

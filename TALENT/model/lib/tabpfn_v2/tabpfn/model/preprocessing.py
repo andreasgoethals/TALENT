@@ -30,7 +30,7 @@ from sklearn.preprocessing import (
     StandardScaler,
 )
 
-from TALENT.model.lib.pfn_v2.tabpfn.utils import infer_random_state
+from .utils import infer_random_state
 
 if TYPE_CHECKING:
     from sklearn.base import TransformerMixin

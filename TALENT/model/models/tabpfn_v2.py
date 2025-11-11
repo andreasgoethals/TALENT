@@ -11,24 +11,24 @@ import torch
 from sklearn.base import BaseEstimator, ClassifierMixin, check_is_fitted
 from sklearn.preprocessing import LabelEncoder
 
-from TALENT.model.lib.pfn_v2.tabpfn.base import (
+from TALENT.model.lib.tabpfn_v2.tabpfn.base import (
     create_inference_engine,
     determine_precision,
     initialize_tabpfn_model,
 )
-from TALENT.model.lib.pfn_v2.tabpfn.constants import (
+from TALENT.model.lib.tabpfn_v2.tabpfn.constants import (
     PROBABILITY_EPSILON_ROUND_ZERO,
     SKLEARN_16_DECIMAL_PRECISION,
     ModelInterfaceConfig,
     XType,
     YType,
 )
-from TALENT.model.lib.pfn_v2.tabpfn.preprocessing import (
+from TALENT.model.lib.tabpfn_v2.tabpfn.preprocessing import (
     ClassifierEnsembleConfig,
     EnsembleConfig,
     default_classifier_preprocessor_configs,
 )
-from TALENT.model.lib.pfn_v2.tabpfn.utils import (
+from TALENT.model.lib.tabpfn_v2.tabpfn.utils import (
     _fix_dtypes,
     _get_ordinal_encoder,
     infer_categorical_features,
@@ -49,26 +49,26 @@ from sklearn.base import (
     check_is_fitted,
 )
 
-from TALENT.model.lib.pfn_v2.tabpfn.base import (
+from TALENT.model.lib.tabpfn_v2.tabpfn.base import (
     create_inference_engine,
     determine_precision,
     initialize_tabpfn_model,
 )
-from TALENT.model.lib.pfn_v2.tabpfn.constants import (
+from TALENT.model.lib.tabpfn_v2.tabpfn.constants import (
     ModelInterfaceConfig,
     XType,
     YType,
 )
-from TALENT.model.lib.pfn_v2.tabpfn.model.bar_distribution import FullSupportBarDistribution
-from TALENT.model.lib.pfn_v2.tabpfn.model.preprocessing import (
+from TALENT.model.lib.tabpfn_v2.tabpfn.model.bar_distribution import FullSupportBarDistribution
+from TALENT.model.lib.tabpfn_v2.tabpfn.model.preprocessing import (
     ReshapeFeatureDistributionsStep,
 )
-from TALENT.model.lib.pfn_v2.tabpfn.preprocessing import (
+from TALENT.model.lib.tabpfn_v2.tabpfn.preprocessing import (
     EnsembleConfig,
     RegressorEnsembleConfig,
     default_regressor_preprocessor_configs,
 )
-from TALENT.model.lib.pfn_v2.tabpfn.utils import (
+from TALENT.model.lib.tabpfn_v2.tabpfn.utils import (
     _fix_dtypes,
     _get_ordinal_encoder,
     _transform_borders_one,
@@ -87,10 +87,10 @@ if TYPE_CHECKING:
     from sklearn.pipeline import Pipeline
     from torch.types import _dtype
 
-    from TALENT.model.lib.pfn_v2.tabpfn.inference import (
+    from TALENT.model.lib.tabpfn_v2.tabpfn.inference import (
         InferenceEngine,
     )
-    from TALENT.model.lib.pfn_v2.tabpfn.model.config import InferenceConfig
+    from TALENT.model.lib.tabpfn_v2.tabpfn.model.config import InferenceConfig
 
     try:
         from sklearn.base import Tags

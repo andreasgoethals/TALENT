@@ -12,9 +12,9 @@ import torch
 from torch import nn
 from torch.nn.modules.transformer import Module, Tensor
 
-from TALENT.model.lib.pfn_v2.tabpfn.model.memory import support_save_peak_mem_factor
-from TALENT.model.lib.pfn_v2.tabpfn.model.mlp import MLP
-from TALENT.model.lib.pfn_v2.tabpfn.model.multi_head_attention import MultiHeadAttention
+from .memory import support_save_peak_mem_factor
+from .mlp import MLP
+from .multi_head_attention import MultiHeadAttention
 
 HIDDEN_SIZE_LIMIT = 512
 MLP_SAVE_PEAK_MEM_FACTOR = 32

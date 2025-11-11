@@ -16,12 +16,12 @@ from typing_extensions import override
 import numpy as np
 from sklearn.utils.validation import joblib
 
-from TALENT.model.lib.pfn_v2.tabpfn.constants import (
+from .constants import (
     CLASS_SHUFFLE_OVERESTIMATE_FACTOR,
     MAXIMUM_FEATURE_SHIFT,
     PARALLEL_MODE_TO_RETURN_AS,
 )
-from TALENT.model.lib.pfn_v2.tabpfn.model.preprocessing import (
+from .preprocessing import (
     AddFingerprintFeaturesStep,
     EncodeCategoricalFeaturesStep,
     FeaturePreprocessingTransformerStep,
@@ -31,7 +31,7 @@ from TALENT.model.lib.pfn_v2.tabpfn.model.preprocessing import (
     SequentialFeatureTransformer,
     ShuffleFeaturesStep,
 )
-from TALENT.model.lib.pfn_v2.tabpfn.utils import infer_random_state
+from .utils import infer_random_state
 
 if TYPE_CHECKING:
     import numpy.typing as npt

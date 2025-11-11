@@ -15,13 +15,13 @@ from typing_extensions import override
 import numpy as np
 import torch
 
-from TALENT.model.lib.pfn_v2.tabpfn.model.memory import MemoryUsageEstimator
-from TALENT.model.lib.pfn_v2.tabpfn.preprocessing import fit_preprocessing
+from .model.memory import MemoryUsageEstimator
+from .preprocessing import fit_preprocessing
 
 if TYPE_CHECKING:
-    from TALENT.model.lib.pfn_v2.tabpfn.model.preprocessing import SequentialFeatureTransformer
-    from TALENT.model.lib.pfn_v2.tabpfn.model.transformer import PerFeatureTransformer
-    from TALENT.model.lib.pfn_v2.tabpfn.preprocessing import EnsembleConfig
+    from .model.preprocessing import SequentialFeatureTransformer
+    from .model.transformer import PerFeatureTransformer
+    from .preprocessing import EnsembleConfig
 
 
 @dataclass

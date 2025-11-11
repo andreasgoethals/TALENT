@@ -9,7 +9,7 @@ from typing_extensions import override
 import torch
 from torch.utils.checkpoint import checkpoint
 
-from TALENT.model.lib.pfn_v2.tabpfn.model.memory import support_save_peak_mem_factor
+from .memory import support_save_peak_mem_factor
 
 try:
     from flash_attn.flash_attn_interface import (

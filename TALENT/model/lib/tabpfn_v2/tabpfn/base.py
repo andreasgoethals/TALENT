@@ -15,17 +15,17 @@ from typing import (
 import torch
 
 # --- TabPFN imports ---
-from TALENT.model.lib.pfn_v2.tabpfn.constants import (
+from .constants import (
     AUTOCAST_DTYPE_BYTE_SIZE,
     DEFAULT_DTYPE_BYTE_SIZE,
 )
-from TALENT.model.lib.pfn_v2.tabpfn.inference import (
+from .inference import (
     InferenceEngine,
     InferenceEngineCacheKV,
     InferenceEngineCachePreprocessing,
     InferenceEngineOnDemand,
 )
-from TALENT.model.lib.pfn_v2.tabpfn.utils import (
+from .utils import (
     infer_fp16_inference_mode,
     load_model_criterion_config,
 )
@@ -33,9 +33,9 @@ from TALENT.model.lib.pfn_v2.tabpfn.utils import (
 if TYPE_CHECKING:
     import numpy as np
 
-    from TALENT.model.lib.pfn_v2.tabpfn.model.bar_distribution import FullSupportBarDistribution
-    from TALENT.model.lib.pfn_v2.tabpfn.model.config import InferenceConfig
-    from TALENT.model.lib.pfn_v2.tabpfn.model.transformer import PerFeatureTransformer
+    from .model.bar_distribution import FullSupportBarDistribution
+    from .model.config import InferenceConfig
+    from .model.transformer import PerFeatureTransformer
 
 
 @overload

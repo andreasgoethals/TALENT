@@ -32,26 +32,26 @@ from sklearn.base import (
     check_is_fitted,
 )
 
-from TALENT.model.lib.pfn_v2.tabpfn.base import (
+from .base import (
     create_inference_engine,
     determine_precision,
     initialize_tabpfn_model,
 )
-from TALENT.model.lib.pfn_v2.tabpfn.constants import (
+from .constants import (
     ModelInterfaceConfig,
     XType,
     YType,
 )
-from TALENT.model.lib.pfn_v2.tabpfn.model.bar_distribution import FullSupportBarDistribution
-from TALENT.model.lib.pfn_v2.tabpfn.model.preprocessing import (
+from .model.bar_distribution import FullSupportBarDistribution
+from .model.preprocessing import (
     ReshapeFeatureDistributionsStep,
 )
-from TALENT.model.lib.pfn_v2.tabpfn.preprocessing import (
+from .preprocessing import (
     EnsembleConfig,
     RegressorEnsembleConfig,
     default_regressor_preprocessor_configs,
 )
-from TALENT.model.lib.pfn_v2.tabpfn.utils import (
+from .utils import (
     _fix_dtypes,
     _get_ordinal_encoder,
     _transform_borders_one,
@@ -70,10 +70,10 @@ if TYPE_CHECKING:
     from sklearn.pipeline import Pipeline
     from torch.types import _dtype
 
-    from TALENT.model.lib.pfn_v2.tabpfn.inference import (
+    from .inference import (
         InferenceEngine,
     )
-    from TALENT.model.lib.pfn_v2.tabpfn.model.config import InferenceConfig
+    from .model.config import InferenceConfig
 
     try:
         from sklearn.base import Tags

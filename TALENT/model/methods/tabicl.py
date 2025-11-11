@@ -56,7 +56,10 @@ class TabICLMethod(Method):
     def construct_model(self, model_config = None,cat_indices=[]):
             from TALENT.model.lib.tabicl.classifier import TabICLClassifier
             self.model = TabICLClassifier(
-                device = self.args.device,
+                device=self.args.device,
+                random_state=self.args.seed,
+                checkpoint_version="tabicl-classifier-v1.1-0506.ckpt",
+                model_path="./TALENT/model/models/models_tabicl/tabicl-classifier-v1.1-0506.ckpt",
                 n_estimators=32,                  # number of ensemble members
                 norm_methods=["none", "power"],   # normalization methods to try
                 feat_shuffle_method="latin",      # feature permutation strategy
@@ -64,13 +67,14 @@ class TabICLMethod(Method):
                 outlier_threshold=4.0,            # z-score threshold for outlier detection and clipping
                 softmax_temperature=0.9,          # controls prediction confidence
                 average_logits=True,              # whether ensemble averaging is done on logits or probabilities
-                use_hierarchical=True,            # enable hierarchical classification for datasets with many classe
+                use_hierarchical=True,            # enable hierarchical classification for datasets with many classes
                 batch_size=8,                     # process this many ensemble members together (reduce RAM usage)
                 use_amp=True,                     # use automatic mixed precision for faster inference
                 allow_auto_download=True,         # whether automatic download to the specified path is allowed
-                random_state=self.args.seed,                  # random seed for reproducibility
+                n_jobs=None,                      # number of threads to use for PyTorch
                 verbose=False,                    # print progress messages
-            )  
+                inference_config=None,            # inference configuration for fine-grained control
+            )              
 
     def fit(self, data, info, train = True, config = None):
         N,C,y = data

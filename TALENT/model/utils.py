@@ -362,15 +362,16 @@ def get_deep_args():
     with pkg_resources.files(TALENT).joinpath("configs/deep_configs.json").open("r") as f:
         default_args = json.load(f)
     parser.add_argument('--dataset', type=str, default=default_args['dataset'])
-    parser.add_argument('--model_type', type=str,
-                        default=default_args['model_type'],
-                        choices=['mlp', 'resnet', 'ftt', 'node', 'autoint',
-                                 'tabpfn', 'tangos', 'saint', 'tabcaps', 'tabnet',
-                                 'snn', 'ptarl', 'danets', 'dcn2', 'tabtransformer',
-                                 'dnnr', 'switchtab', 'grownet', 'tabr', 'modernNCA',
-                                 'hyperfast', 'bishop', 'realmlp', 'protogate', 'mlp_plr',
-                                 'excelformer', 'grande', 'amformer', 'tabptm', 'trompt', 'tabm',
-                                 'PFN-v2', 't2gformer', 'tabautopnpnet', 'tabicl', 'mitra', 'limix'
+    parser.add_argument('--model_type', type=str, default=default_args['model_type'],
+                        choices=['mlp', 'resnet', 'autoint', 'snn', 'ftt', 'dcn2', 'tabr', 
+                                 'modernNCA', 'tabnet', 'node', 'tabcaps', 'saint', 'tangos', 
+                                 'ptarl', 'danets', 'tabtransformer', 'grownet', 'dnnr', 
+                                 'switchtab', 'bishop', 'protogate', 'realmlp', 'mlp_plr',
+                                 'excelformer', 'grande', 'amformer', 'trompt', 'tabm', 
+                                 't2gformer', 'tabautopnpnet', 
+                                 
+                                 'tabpfn', 'tabpfn_v2', 'tabpfn_real', 'hyperfast', 'tabptm', 
+                                 'tabicl', 'mitra', 'limix', 
                                  ])
 
     # optimization parameters
@@ -741,72 +742,66 @@ def get_method(model):
     :model: str, model name
     :return: class, method class
     """
+    
+    # Deep methods
+    
     if model == "mlp":
         from TALENT.model.methods.mlp import MLPMethod
         return MLPMethod
     elif model == 'resnet':
         from TALENT.model.methods.resnet import ResNetMethod
         return ResNetMethod
-    elif model == 'node':
-        from TALENT.model.methods.node import NodeMethod
-        return NodeMethod
+    elif model == 'autoint':
+        from TALENT.model.methods.autoint import AutoIntMethod
+        return AutoIntMethod
+    elif model == 'snn':
+        from TALENT.model.methods.snn import SNNMethod
+        return SNNMethod
     elif model == 'ftt':
         from TALENT.model.methods.ftt import FTTMethod
         return FTTMethod
-    elif model == 'tabptm':
-        from TALENT.model.methods.tabptm import TabPTMMethod
-        return TabPTMMethod
-    elif model == 'tabpfn':
-        from TALENT.model.methods.tabpfn import TabPFNMethod
-        return TabPFNMethod
+    elif model == 'dcn2':
+        from TALENT.model.methods.dcn2 import DCN2Method
+        return DCN2Method
     elif model == 'tabr':
         from TALENT.model.methods.tabr import TabRMethod
         return TabRMethod
     elif model == 'modernNCA':
         from TALENT.model.methods.modernNCA import ModernNCAMethod
         return ModernNCAMethod
-    elif model == 'tabcaps':
-        from TALENT.model.methods.tabcaps import TabCapsMethod
-        return TabCapsMethod
     elif model == 'tabnet':
         from TALENT.model.methods.tabnet import TabNetMethod
         return TabNetMethod
+    elif model == 'node':
+        from TALENT.model.methods.node import NodeMethod
+        return NodeMethod
+    elif model == 'tabcaps':
+        from TALENT.model.methods.tabcaps import TabCapsMethod
+        return TabCapsMethod
     elif model == 'saint':
         from TALENT.model.methods.saint import SaintMethod
         return SaintMethod
     elif model == 'tangos':
         from TALENT.model.methods.tangos import TangosMethod
         return TangosMethod
-    elif model == 'snn':
-        from TALENT.model.methods.snn import SNNMethod
-        return SNNMethod
     elif model == 'ptarl':
         from TALENT.model.methods.ptarl import PTARLMethod
         return PTARLMethod
     elif model == 'danets':
         from TALENT.model.methods.danets import DANetsMethod
         return DANetsMethod
-    elif model == 'dcn2':
-        from TALENT.model.methods.dcn2 import DCN2Method
-        return DCN2Method
     elif model == 'tabtransformer':
         from TALENT.model.methods.tabtransformer import TabTransformerMethod
         return TabTransformerMethod
     elif model == 'grownet':
         from TALENT.model.methods.grownet import GrowNetMethod
         return GrowNetMethod
-    elif model == 'autoint':
-        from TALENT.model.methods.autoint import AutoIntMethod
-        return AutoIntMethod
     elif model == 'dnnr':
         from TALENT.model.methods.dnnr import DNNRMethod
         return DNNRMethod
     elif model == 'switchtab':
         from TALENT.model.methods.switchtab import SwitchTabMethod
         return SwitchTabMethod
-    elif model == 'hyperfast':
-        from TALENT.model.methods.hyperfast import HyperFastMethod
-        return HyperFastMethod
     elif model == 'bishop':
         from TALENT.model.methods.bishop import BiSHopMethod
         return BiSHopMethod
@@ -834,51 +829,69 @@ def get_method(model):
     elif model == 'tabm':
         from TALENT.model.methods.tabm import TabMMethod
         return TabMMethod
-    elif model == 'PFN-v2':
-        from TALENT.model.methods.PFN_v2 import TabPFNMethod
-        return TabPFNMethod
-    elif model == 'tabicl':
-        from TALENT.model.methods.tabicl import TabICLMethod
-        return TabICLMethod
     elif model == 't2gformer':
         from TALENT.model.methods.t2gformer import T2GFormerMethod
         return T2GFormerMethod
-    elif model == 'xgboost':
-        from TALENT.model.classical_methods.xgboost import XGBoostMethod
-        return XGBoostMethod
-    elif model == 'LogReg':
-        from TALENT.model.classical_methods.logreg import LogRegMethod
-        return LogRegMethod
-    elif model == 'NCM':
-        from TALENT.model.classical_methods.ncm import NCMMethod
-        return NCMMethod
-    elif model == 'lightgbm':
-        from TALENT.model.classical_methods.lightgbm import LightGBMMethod
-        return LightGBMMethod
-    elif model == 'NaiveBayes':
-        from TALENT.model.classical_methods.naivebayes import NaiveBayesMethod
-        return NaiveBayesMethod
-    elif model == 'knn':
-        from TALENT.model.classical_methods.knn import KnnMethod
-        return KnnMethod
-    elif model == 'RandomForest':
-        from TALENT.model.classical_methods.randomforest import RandomForestMethod
-        return RandomForestMethod
-    elif model == 'catboost':
-        from TALENT.model.classical_methods.catboost import CatBoostMethod
-        return CatBoostMethod
-    elif model == 'svm':
-        from TALENT.model.classical_methods.svm import SvmMethod
-        return SvmMethod
-    elif model == 'dummy':
-        from TALENT.model.classical_methods.dummy import DummyMethod
-        return DummyMethod
-    elif model == 'LinearRegression':
-        from TALENT.model.classical_methods.lr import LinearRegressionMethod
-        return LinearRegressionMethod
     elif model == 'tabautopnpnet':
         from TALENT.model.methods.tabautopnpnet import TabAutoPNPNetMethod
         return TabAutoPNPNetMethod
+    
+    # Classical methods
+    
+    elif model == 'dummy':
+        from TALENT.model.classical_methods.dummy import DummyMethod
+        return DummyMethod
+    elif model == 'LogReg':
+        from TALENT.model.classical_methods.logreg import LogRegMethod
+        return LogRegMethod
+    elif model == 'LinearRegression':
+        from TALENT.model.classical_methods.lr import LinearRegressionMethod
+        return LinearRegressionMethod
+    elif model == 'xgboost':
+        from TALENT.model.classical_methods.xgboost import XGBoostMethod
+        return XGBoostMethod
+    elif model == 'catboost':
+        from TALENT.model.classical_methods.catboost import CatBoostMethod
+        return CatBoostMethod
+    elif model == 'lightgbm':
+        from TALENT.model.classical_methods.lightgbm import LightGBMMethod
+        return LightGBMMethod
+    elif model == 'RandomForest':
+        from TALENT.model.classical_methods.randomforest import RandomForestMethod
+        return RandomForestMethod
+    elif model == 'svm':
+        from TALENT.model.classical_methods.svm import SvmMethod
+        return SvmMethod
+    elif model == 'knn':
+        from TALENT.model.classical_methods.knn import KnnMethod
+        return KnnMethod
+    elif model == 'NCM':
+        from TALENT.model.classical_methods.ncm import NCMMethod
+        return NCMMethod
+    elif model == 'NaiveBayes':
+        from TALENT.model.classical_methods.naivebayes import NaiveBayesMethod
+        return NaiveBayesMethod
+
+    # General methods
+    
+    elif model == 'tabpfn':
+        from TALENT.model.methods.tabpfn import TabPFNMethod
+        return TabPFNMethod
+    elif model == 'tabpfn_v2':
+        from TALENT.model.methods.tabpfn_v2 import TabPFNMethod
+        return TabPFNMethod
+    elif model == 'tabpfn_real':
+        from TALENT.model.methods.tabpfn_real import TabPFNRealMethod
+        return TabPFNRealMethod
+    elif model == 'hyperfast':
+        from TALENT.model.methods.hyperfast import HyperFastMethod
+        return HyperFastMethod
+    elif model == 'tabptm':
+        from TALENT.model.methods.tabptm import TabPTMMethod
+        return TabPTMMethod
+    elif model == 'tabicl':
+        from TALENT.model.methods.tabicl import TabICLMethod
+        return TabICLMethod
     elif model == 'mitra':
         from TALENT.model.methods.mitra import MitraMethod
         return MitraMethod
@@ -888,5 +901,6 @@ def get_method(model):
     elif model == 'limix':
         from TALENT.model.methods.limix import LimiXMethod
         return LimiXMethod
+
     else:
         raise NotImplementedError("Model \"" + model + "\" not yet implemented")

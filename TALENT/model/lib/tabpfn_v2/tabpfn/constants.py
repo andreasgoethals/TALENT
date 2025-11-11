@@ -17,7 +17,7 @@ import numpy as np
 from packaging import version
 
 if TYPE_CHECKING:
-    from TALENT.model.lib.pfn_v2.tabpfn.preprocessing import (
+    from .preprocessing import (
         PreprocessorConfig,
     )
 

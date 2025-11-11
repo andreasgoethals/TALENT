@@ -12,6 +12,7 @@ from TALENT.model.lib.data import (
 )
 import time
 
+
 class TabPFNMethod(Method):
     def __init__(self, args, is_regression):
         super().__init__(args, is_regression)
@@ -39,13 +40,29 @@ class TabPFNMethod(Method):
                 self.N_test,self.C_test = N_test['test'],None
             self.y_test = y_test['test']
 
+
     def construct_model(self, model_config = None,cat_indices=[]):
         if self.is_regression:
-            from TALENT.model.models.PFN_v2 import TabPFNRegressor
-            self.model = TabPFNRegressor(device = self.args.device,random_state = self.args.seed,n_estimators=4,ignore_pretraining_limits=True,categorical_features_indices=cat_indices)
+            from TALENT.model.models.tabpfn_v2 import TabPFNRegressor
+            self.model = TabPFNRegressor(
+                model_path = "./TALENT/model/models/models_tabpfn/tabpfn-v2-regressor.ckpt",
+                device = self.args.device,
+                random_state = self.args.seed,
+                n_estimators = 8,
+                ignore_pretraining_limits = True,
+                categorical_features_indices = cat_indices
+            )            
         else:
-            from TALENT.model.models.PFN_v2 import TabPFNClassifier
-            self.model = TabPFNClassifier(device = self.args.device,random_state = self.args.seed,n_estimators=4,ignore_pretraining_limits=True,categorical_features_indices=cat_indices)  
+            from TALENT.model.models.tabpfn_v2 import TabPFNClassifier
+            self.model = TabPFNClassifier(
+                model_path = "./TALENT/model/models/models_tabpfn/tabpfn-v2-classifier.ckpt",
+                device = self.args.device,
+                random_state = self.args.seed,
+                n_estimators = 4,
+                ignore_pretraining_limits = True,
+                categorical_features_indices = cat_indices
+            )
+
 
     def fit(self, data, info, train = True, config = None):
         N,C,y = data
@@ -54,7 +71,6 @@ class TabPFNMethod(Method):
         self.N, self.C, self.y = self.D.N, self.D.C, self.D.y
         self.is_binclass, self.is_multiclass, self.is_regression = self.D.is_binclass, self.D.is_multiclass, self.D.is_regression
         self.data_format(is_train = True)
-        
 
         sampled_Y = self.y['train']
         cat_indices = []
@@ -74,7 +90,8 @@ class TabPFNMethod(Method):
         self.model.fit(sampled_X,sampled_Y,sample_size)
         time_cost = time.time() - tic
         return time_cost
-    
+
+
     def predict(self, data, info, model_name):
         import time
         start_time = time.time()
@@ -99,4 +116,3 @@ class TabPFNMethod(Method):
             print('[{}]={:.4f}'.format(name, res))
         print('Time cost: {:.4f}s'.format(time.time() - start_time))
         return vl, vres, metric_name, test_logit
-

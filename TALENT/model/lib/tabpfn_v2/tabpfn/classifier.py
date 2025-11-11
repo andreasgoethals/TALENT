@@ -14,19 +14,19 @@ import torch
 from sklearn.base import BaseEstimator, ClassifierMixin, check_is_fitted
 from sklearn.preprocessing import LabelEncoder
 
-from TALENT.model.lib.pfn_v2.tabpfn.base import (
+from .base import (
     create_inference_engine,
     determine_precision,
     initialize_tabpfn_model,
 )
-from TALENT.model.lib.pfn_v2.tabpfn.constants import (
+from .constants import (
     PROBABILITY_EPSILON_ROUND_ZERO,
     SKLEARN_16_DECIMAL_PRECISION,
     ModelInterfaceConfig,
     XType,
     YType,
 )
-from TALENT.model.lib.pfn_v2.tabpfn.preprocessing import (
+from .preprocessing import (
     ClassifierEnsembleConfig,
     EnsembleConfig,
     default_classifier_preprocessor_configs,
@@ -47,10 +47,10 @@ if TYPE_CHECKING:
     from sklearn.compose import ColumnTransformer
     from torch.types import _dtype
 
-    from TALENT.model.lib.pfn_v2.tabpfn.inference import (
+    from .inference import (
         InferenceEngine,
     )
-    from TALENT.model.lib.pfn_v2.tabpfn.model.config import InferenceConfig
+    from .model.config import InferenceConfig
 
     try:
         from sklearn.base import Tags

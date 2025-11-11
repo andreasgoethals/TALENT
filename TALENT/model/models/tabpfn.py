@@ -20,17 +20,28 @@ from sklearn.utils import column_or_1d
 
 from TALENT.model.lib.tabpfn.utils import CustomUnpickler
 from TALENT.model.lib.tabpfn.utils import load_model_workflow, get_params_from_config, transformer_predict
-# Source: https://github.com/automl/TabPFN
+# Source: https://github.com/PriorLabs/TabPFN
 
 
 class TabPFNClassifier(BaseEstimator, ClassifierMixin):
 
     models_in_memory = {}
 
-    def __init__(self, device='cpu', base_path=pathlib.Path(__file__).parent.resolve(), model_string='',
-                 N_ensemble_configurations=3, no_preprocess_mode=False, multiclass_decoder='permutation',
-                 feature_shift_decoder=True, only_inference=True, seed=0, no_grad=True, batch_size_inference=32,
-                 subsample_features=False):
+    def __init__(
+        self, 
+        device = 'cpu',
+        base_path = pathlib.Path(__file__).parent.resolve(), 
+        model_string = '',
+        N_ensemble_configurations = 32, 
+        no_preprocess_mode = False, 
+        multiclass_decoder = 'permutation',
+        feature_shift_decoder = True, 
+        only_inference = True, 
+        seed = 0, 
+        no_grad = True, 
+        batch_size_inference = 32,
+        subsample_features = False,
+    ):
         """
         Initializes the classifier and loads the model. 
         Depending on the arguments, the model is either loaded from memory, from a file, or downloaded from the 
