@@ -142,6 +142,8 @@ TALENT integrates an extensive array of 30+ deep learning architectures for tabu
 36. **[Mitra](https://www.amazon.science/blog/mitra-mixed-synthetic-priors-for-enhancing-tabular-foundation-models)**: A tabular foundation model learned with mixed synthetic priors.
 37. **[LimiX](https://github.com/limix-ldm/LimiX)**: A tabular foundation model that leverages transformers to support a wide range of tasks, from prediction to imputation and causal inference, within a unified architecture.
 38. **[Real-TabPFN](https://arxiv.org/abs/2507.03971)**: An enhanced tabular foundation model that extends TabPFNv2 through continued pre-training on real-world datasets for classification tasks. 
+39. **[RFM](https://www.science.org/doi/10.1126/science.adi5639)**: A non-deep, backpropagation-free feature learning algorithm, iteratively applies AGOP to a kernel machine to adaptively learn task-specific features.
+40. **[xRFM](https://arxiv.org/abs/2508.10053)**: A tabular model that combines RFMs with an adaptive tree structure, enabling it to learn features local to data subsets and scale log-linearly with the number of samples.
 
 
 🔧 If you want to check the **default hyperparameters and hyperparameter search spaces** of all methods, please visit:  
@@ -277,27 +279,31 @@ We provide comprehensive evaluations of classical and deep tabular methods based
 
 We use `Accuracy` and `RMSE` as the metrics for classification tasks and regression tasks, respectively. To calibrate the metrics, we choose the average performance rank to compare all methods, where a lower rank indicates better performance, following  [Sheskin (2003)](https://www.taylorfrancis.com/books/mono/10.1201/9781420036268/handbook-parametric-nonparametric-statistical-procedures-david-sheskin). Efficiency is calculated by the average training time in seconds, with lower values denoting better time efficiency. The model size is visually indicated by the radius of the circles, offering a quick glance at the trade-off between model complexity and performance.
 
-The classical method `SVM` provided in TALENT is a `LinearSVM` to ensure faster training.  We also consider the `Dummy` baseline, which outputs the label of the major class and the average labels for classification and regression tasks, respectively.
+<!-- The classical method `SVM` provided in TALENT is a `LinearSVM` to ensure faster training.  We also consider the `Dummy` baseline, which outputs the label of the major class and the average labels for classification and regression tasks, respectively. -->
 
-- Binary classification
+<div align="center" style="text-align:center;">
 
-  <img src="./resources/binclass.png" style="zoom:36%;" />
+  <div style="display:inline-block; width:45%; vertical-align:top; margin-bottom:5px;">
+    <img src="./resources/Performance-Efficiency-Size-251005-bin.png" alt="Binary classification" style="width:45%; border-radius:8px;" />
+    <div>(a) Binary classification</div>
+  </div><div style="display:inline-block; width:45%; vertical-align:top; margin-bottom:5px;">
+    <img src="./resources/Performance-Efficiency-Size-251005-mul.png" alt="Multiclass Classification" style="width:45%; border-radius:8px;" />
+    <div>(b) Multiclass classification</div>
+  </div>
 
-- Multiclass Classification
+  <div style="display:inline-block; width:45%; vertical-align:top; margin-bottom:5px;">
+    <img src="./resources/Performance-Efficiency-Size-251005-reg.png" alt="Regression" style="width:45%; border-radius:8px;" />
+    <div>(c) Regression</div>
+  </div><div style="display:inline-block; width:45%; vertical-align:top; margin-bottom:5px;">
+    <img src="./resources/Performance-Efficiency-Size-251005-all.png" alt="All tasks" style="width:45%; border-radius:8px;" />
+    <div>(d) All tasks</div>
+  </div>
 
-  <img src="./resources/multiclass.png" style="zoom:36%;" />
+</div>
 
-- Regression
+<!-- From the comparison, we observe that **CatBoost** achieves the best average rank in most classification and regression tasks. Among all deep tabular methods, **ModernNCA** performs the best in most cases while maintaining an acceptable training cost. These results highlight the effectiveness of CatBoost and ModernNCA in handling various tabular prediction tasks, making them suitable choices for practitioners seeking high performance and efficiency.
 
-  <img src="./resources/regression.png" style="zoom:36%;" />
-
-- All tasks
-
-  <img src="./resources/all_tasks.png" style="zoom:36%;" />
-
-From the comparison, we observe that **CatBoost** achieves the best average rank in most classification and regression tasks. Among all deep tabular methods, **ModernNCA** performs the best in most cases while maintaining an acceptable training cost. These results highlight the effectiveness of CatBoost and ModernNCA in handling various tabular prediction tasks, making them suitable choices for practitioners seeking high performance and efficiency.
-
-These visualizations serve as an effective tool for quickly and fairly assessing the strengths and weaknesses of various tabular methods across different task types, enabling researchers and practitioners to make informed decisions when selecting suitable modeling techniques for their specific needs.
+These visualizations serve as an effective tool for quickly and fairly assessing the strengths and weaknesses of various tabular methods across different task types, enabling researchers and practitioners to make informed decisions when selecting suitable modeling techniques for their specific needs. -->
 
 ## 👨🏫 Acknowledgments
 
@@ -327,6 +333,8 @@ We thank the following repos for providing helpful components/functions in our w
 - [TabM](https://github.com/yandex-research/tabm)
 - [TabICL](https://github.com/soda-inria/tabicl)
 - [TabAutoPNPNet](https://github.com/matteo-rizzo/periodic-tabular-dl)
+- [LimiX](https://github.com/limix-ldm/LimiX)
+- [xRFM](https://github.com/dmbeaglehole/xRFM)
 
 ## 🤗 Contact
 
