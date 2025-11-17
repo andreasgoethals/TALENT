@@ -75,7 +75,7 @@ Welcome to **TALENT**, a benchmark with a comprehensive machine learning toolbox
 
 - [2025-11]🌟 Add [RFM](https://www.science.org/doi/10.1126/science.adi5639) (Science).
 - [2025-11]🌟 Add [Real-TabPFN](https://arxiv.org/abs/2507.03971).
-- [2025-11]🌟 Add [LimiX](https://github.com/limix-ldm/LimiX).
+- [2025-11]🌟 Add [LimiX](https://arxiv.org/abs/2509.03505).
 - [2025-09]🌟 Add [xRFM](https://arxiv.org/abs/2508.10053).
 - [2025-08]🌟 Add [Mitra](https://www.amazon.science/blog/mitra-mixed-synthetic-priors-for-enhancing-tabular-foundation-models).
 - [2025-06]🌟 Add [TabAutoPNPNet](https://www.mdpi.com/2079-9292/14/6/1165) (Electronics 2025).
@@ -140,7 +140,7 @@ TALENT integrates an extensive array of 30+ deep learning architectures for tabu
 34. **[TabICL](https://arxiv.org/abs/2502.05564)**: A comparable tabular foundation model with performance on par with TabPFN v2.
 35. **[TabAutoPNPNet](https://www.mdpi.com/2079-9292/14/6/1165)**: A tabular model based on periodicity, particularly the Fourier transform and Chebyshev polynomials, with performance on par with or superior to FT-Transformer. 
 36. **[Mitra](https://www.amazon.science/blog/mitra-mixed-synthetic-priors-for-enhancing-tabular-foundation-models)**: A tabular foundation model learned with mixed synthetic priors.
-37. **[LimiX](https://github.com/limix-ldm/LimiX)**: A tabular foundation model that leverages transformers to support a wide range of tasks, from prediction to imputation and causal inference, within a unified architecture.
+37. **[LimiX](https://arxiv.org/abs/2509.03505)**: A tabular foundation model that leverages transformers to support a wide range of tasks, from prediction to imputation and causal inference, within a unified architecture.
 38. **[Real-TabPFN](https://arxiv.org/abs/2507.03971)**: An enhanced tabular foundation model that extends TabPFNv2 through continued pre-training on real-world datasets for classification tasks. 
 39. **[RFM](https://www.science.org/doi/10.1126/science.adi5639)**: A non-deep, backpropagation-free feature learning algorithm, iteratively applies AGOP to a kernel machine to adaptively learn task-specific features.
 40. **[xRFM](https://arxiv.org/abs/2508.10053)**: A tabular model that combines RFMs with an adaptive tree structure, enabling it to learn features local to data subsets and scale log-linearly with the number of samples.
