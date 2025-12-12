@@ -97,6 +97,9 @@ class CatBoostMethod(classical_methods):
             test_data = np.concatenate([self.N_test, self.C_test.astype(str)], axis=1)
         if self.is_regression:
             test_logit = self.model.predict(test_data)
+            #Denormalize regression predictions back to original scale
+            if self.y_info['policy'] == 'mean_std':
+                test_logit = test_logit * self.y_info['std'] + self.y_info['mean']
         else:
             test_logit = self.model.predict_proba(test_data)
         vres, metric_name = self.metric(test_logit, test_label, self.y_info)
