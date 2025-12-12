@@ -219,7 +219,7 @@ class Method(object, metaclass=abc.ABCMeta):
         vres, metric_name = self.metric(test_logit, test_label, self.y_info)
 
         # Denormalize regression predictions back to original scale for return value
-        if self.is_regression and self.y_info['policy'] == 'mean_std':
+        if self.is_regression and self.y_info.get('policy') == 'mean_std':
             test_logit = test_logit * self.y_info['std'] + self.y_info['mean']
 
         print('Test: loss={:.4f}'.format(vl))

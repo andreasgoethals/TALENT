@@ -132,7 +132,7 @@ class RFMMethod(XRFMMethod):
         if self.is_regression:
             test_output = self.model.predict(X_test).cpu().numpy()
             # Denormalize regression predictions back to original scale
-            if self.y_info['policy'] == 'mean_std':
+            if self.y_info.get('policy') == 'mean_std':
                 test_output = test_output * self.y_info['std'] + self.y_info['mean']
         else:
             test_output = self.model.predict_proba(X_test).cpu().numpy()

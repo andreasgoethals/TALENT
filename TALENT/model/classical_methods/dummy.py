@@ -46,7 +46,7 @@ class DummyMethod(classical_methods):
         if self.is_regression:
             test_logit = self.model.predict(self.N_test)
             # Denormalize regression predictions back to original scale
-            if self.y_info['policy'] == 'mean_std':
+            if self.y_info.get('policy') == 'mean_std':
                 test_logit = test_logit * self.y_info['std'] + self.y_info['mean']
         else:
             test_logit = self.model.predict_proba(self.N_test)
