@@ -16,4 +16,3 @@ class LightGBMMethod(XGBoostMethod):
             self.model = LGBMRegressor(**model_config,random_state=self.args.seed)
         else:
             self.model = LGBMClassifier(**model_config,random_state=self.args.seed)
-    
