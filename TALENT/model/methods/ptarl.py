@@ -74,26 +74,26 @@ class PTARLMethod(Method):
         self.trlog['best_res'] = best_loss
 
     def predict(self, data, info, model_name):
-            N,C,y = data
-            self.model_type1 = self.args.model_type + '_ot'
-            self.cluster_centers_ = np.load(osp.join(self.args.save_path, 'cluster-centers-{}.npy'.format(str(self.args.seed))), allow_pickle=True)
-            self.construct_model(self.model_config)
-            self.model.load_state_dict(torch.load(osp.join(self.args.save_path, model_name + '-{}.pth'.format(str(self.args.seed))))['params'])
-            self.model.eval()
-            self.data_format(False, N, C, y)
+        N,C,y = data
+        self.model_type1 = self.args.model_type + '_ot'
+        self.cluster_centers_ = np.load(osp.join(self.args.save_path, 'cluster-centers-{}.npy'.format(str(self.args.seed))), allow_pickle=True)
+        self.construct_model(self.model_config)
+        self.model.load_state_dict(torch.load(osp.join(self.args.save_path, model_name + '-{}.pth'.format(str(self.args.seed))))['params'])
+        self.model.eval()
+        self.data_format(False, N, C, y)
 
-            test_logit,test_label = test(self.model, self.test_loader,self.args)
+        test_logit,test_label = test(self.model, self.test_loader,self.args)
             
-            vl = self.criterion(torch.tensor(test_logit), torch.tensor(test_label)).item()     
+        vl = self.criterion(torch.tensor(test_logit), torch.tensor(test_label)).item()     
 
-            vres, metric_name = self.metric(test_logit, test_label, self.y_info)
+        vres, metric_name = self.metric(test_logit, test_label, self.y_info)
 
-            # FIX: Denormalize regression predictions
-            if self.is_regression and self.y_info.get('policy') == 'mean_std':
-                test_logit = test_logit * self.y_info['std'] + self.y_info['mean']
+        # FIX: Denormalize regression predictions
+        if self.is_regression and self.y_info.get('policy') == 'mean_std':
+            test_logit = test_logit * self.y_info['std'] + self.y_info['mean']
 
-            print('Test: loss={:.4f}'.format(vl))
-            for name, res in zip(metric_name, vres):
-                print('[{}]={:.4f}'.format(name, res))
+        print('Test: loss={:.4f}'.format(vl))
+        for name, res in zip(metric_name, vres):
+            print('[{}]={:.4f}'.format(name, res))
             
-            return vl, vres, metric_name, test_logit
+        return vl, vres, metric_name, test_logit

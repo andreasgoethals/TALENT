@@ -132,44 +132,70 @@ class ModernNCAMethod(Method):
 
 
     def predict(self, data, info, model_name):
-            N, C, y = data
-            self.model.load_state_dict(torch.load(osp.join(self.args.save_path, model_name + '-{}.pth'.format(str(self.args.seed))))['params'])
-            print('best epoch {}, best val res={:.4f}'.format(self.trlog['best_epoch'], self.trlog['best_res']))
-            ## Evaluation Stage
-            self.model.eval()
-            
-            self.data_format(False, N, C, y)
-            
-            test_logit, test_label = [], []
-            with torch.no_grad():
-                for i, (X, y) in tqdm(enumerate(self.test_loader)):
-                    # ... (existing loop code) ...
-                    pred = self.model(
-                        x = x,
-                        y = None,
-                        candidate_x = candidate_x,
-                        candidate_y = candidate_y,
-                        is_train = False,
-                    ).squeeze(-1)
-                    
-                    test_logit.append(pred)
-                    test_label.append(y)
-                    
-            test_logit = torch.cat(test_logit, 0)
-            test_label = torch.cat(test_label, 0)
-            
-            vl = self.criterion(test_logit, test_label).item()     
-            vres, metric_name = self.metric(test_logit, test_label, self.y_info)
+        N, C, y = data
+        self.model.load_state_dict(torch.load(osp.join(self.args.save_path, model_name + '-{}.pth'.format(str(self.args.seed))))['params'])
+        print('best epoch {}, best val res={:.4f}'.format(self.trlog['best_epoch'], self.trlog['best_res']))
+        ## Evaluation Stage
+        self.model.eval()
+        
+        self.data_format(False, N, C, y)
+        
+        test_logit, test_label = [], []
+        with torch.no_grad():
+            for i, (X, y) in tqdm(enumerate(self.test_loader)):
+                # [cite_start]Restored logic [cite: 201, 202, 203, 204, 205, 206]
+                if self.N is not None and self.C is not None:
+                    X_num, X_cat = X[0], X[1]
+                elif self.C is not None and self.N is None:
+                    X_num, X_cat = None, X
+                else:
+                    X_num, X_cat = X, None
+                
+                candidate_x_num = self.N['train'] if self.N is not None else None
+                candidate_x_cat = self.C['train'] if self.C is not None else None
+                candidate_y = self.y['train']
+                
+                if self.args.use_float:
+                    X_num = X_num.float() if X_num is not None else None
+                    X_cat = X_cat.float() if X_cat is not None else None
+                    candidate_x_num = candidate_x_num.float() if candidate_x_num is not None else None
+                    candidate_x_cat = candidate_x_cat.float() if candidate_x_cat is not None else None
+                    if self.is_regression:
+                        candidate_y = candidate_y.float()
+                
+                if X_cat is None and X_num is not None:
+                    x, candidate_x = X_num, candidate_x_num
+                elif X_cat is not None and X_num is None:
+                    x, candidate_x = X_cat, candidate_x_cat
+                else:
+                    x, candidate_x = torch.cat([X_num, X_cat], dim=1), torch.cat([candidate_x_num, candidate_x_cat], dim=1)
+                
+                pred = self.model(
+                    x = x,
+                    y = None,
+                    candidate_x = candidate_x,
+                    candidate_y = candidate_y,
+                    is_train = False,
+                ).squeeze(-1)
+                
+                test_logit.append(pred)
+                test_label.append(y)
+                
+        test_logit = torch.cat(test_logit, 0)
+        test_label = torch.cat(test_label, 0)
+        
+        vl = self.criterion(test_logit, test_label).item()     
+        vres, metric_name = self.metric(test_logit, test_label, self.y_info)
 
-            # FIX: Denormalize regression predictions
-            if self.is_regression and self.y_info.get('policy') == 'mean_std':
-                test_logit = test_logit * self.y_info['std'] + self.y_info['mean']
+        # FIX: Denormalize regression predictions
+        if self.is_regression and self.y_info.get('policy') == 'mean_std':
+            test_logit = test_logit * self.y_info['std'] + self.y_info['mean']
 
-            print('Test: loss={:.4f}'.format(vl))
-            for name, res in zip(metric_name, vres):
-                print('[{}]={:.4f}'.format(name, res))
-            
-            return vl, vres, metric_name, test_logit
+        print('Test: loss={:.4f}'.format(vl))
+        for name, res in zip(metric_name, vres):
+            print('[{}]={:.4f}'.format(name, res))
+        
+        return vl, vres, metric_name, test_logit
 
 
     def train_epoch(self, epoch):
