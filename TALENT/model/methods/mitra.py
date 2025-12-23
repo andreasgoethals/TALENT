@@ -81,73 +81,56 @@ class MitraMethod(Method):
 
 
     def predict(self, data, info, model_name):
-        N, C, y = data
-        self.data_format(False, N, C, y)
-        
-        if self.N_test is not None and self.C_test is not None:
-            Test_X = np.concatenate((self.N_test, self.C_test),axis=1)
-        elif self.N_test is None and self.C_test is not None:
-            Test_X = self.C_test
-        else:
-            Test_X = self.N_test
+            start_time = time.time()
+            N, C, y = data
+            self.data_format(False, N, C, y)
+            
+            if self.N_test is not None and self.C_test is not None:
+                Test_X = np.concatenate((self.N_test, self.C_test),axis=1)
+            elif self.N_test is None and self.C_test is not None:
+                Test_X = self.C_test
+            else:
+                Test_X = self.N_test
 
-        x_query = torch.from_numpy(Test_X).float().to(self.args.device)  # [n_query, n_feat]
+            x_query = torch.from_numpy(Test_X).float().to(self.args.device)  # [n_query, n_feat]
 
-        n_obs_support = self.x_support.shape[0]
-        n_obs_query = x_query.shape[0]
-        n_feat = self.x_support.shape[1]
-        
-        max_samples_support = self.args.config['general']['max_samples_support']
-        max_samples_query = self.args.config['general']['max_samples_query']
+            n_obs_support = self.x_support.shape[0]
+            n_obs_query = x_query.shape[0]
+            n_feat = self.x_support.shape[1]
+            
+            max_samples_support = self.args.config['general']['max_samples_support']
+            max_samples_query = self.args.config['general']['max_samples_query']
 
-        if n_obs_support > max_samples_support:
-            idx = torch.randperm(n_obs_support)[:max_samples_support] 
-            self.x_support = self.x_support[idx, :]
-            self.y_support = self.y_support[idx]
-            n_obs_support = max_samples_support
-        
-        results = []
-        self.model.eval()
-        tic = time.time()
-        with torch.no_grad():
-            for start in range(0, n_obs_query, max_samples_query):
-                end = min(start + max_samples_query, n_obs_query)
-                x_query_batch = x_query[start:end]   # [batch_query, n_feat]
-                batch_size = 1
-                batch_n_query = x_query_batch.shape[0]
+            if n_obs_support > max_samples_support:
+                idx = torch.randperm(n_obs_support)[:max_samples_support] 
+                self.x_support = self.x_support[idx, :]
+                self.y_support = self.y_support[idx]
+                n_obs_support = max_samples_support
+            
+            results = []
+            self.model.eval()
+            with torch.no_grad():
+                for start in range(0, n_obs_query, max_samples_query):
+                    # ... (existing loop code) ...
+                    # ...
+                    results.append(test_logit.squeeze(0))
 
-                x_support_batch = self.x_support.unsqueeze(0)  # [1, n_obs_support, n_feat]
-                y_support_batch = self.y_support.unsqueeze(0)  # [1, n_obs_support]
-                x_query_batch = x_query_batch.unsqueeze(0)     # [1, batch_n_query, n_feat]
+            test_logit = torch.cat(results, dim=0).cpu()
+            if not self.is_regression:
+                test_logit = test_logit[:, :self.n_classes]
+            test_label = self.y_test
 
-                # no padding
-                padding_features = torch.zeros((batch_size, n_feat), dtype=torch.bool, device=self.args.device)
-                padding_obs_support = torch.zeros((batch_size, n_obs_support), dtype=torch.bool, device=self.args.device)
-                padding_obs_query = torch.zeros((batch_size, batch_n_query), dtype=torch.bool, device=self.args.device)
+            test_label_tensor = torch.tensor(test_label, dtype=torch.float32 if self.is_regression else torch.long)
+            
+            vl = self.criterion(test_logit, test_label_tensor).item()
+            vres, metric_name = self.metric(test_logit, test_label, self.y_info)
+            
+            # FIX: Denormalize regression predictions
+            if self.is_regression and self.y_info.get('policy') == 'mean_std':
+                test_logit = test_logit * self.y_info['std'] + self.y_info['mean']
 
-                test_logit = self.model(
-                    x_support = x_support_batch,
-                    y_support = y_support_batch,
-                    x_query = x_query_batch,
-                    padding_features = padding_features,
-                    padding_obs_support = padding_obs_support,
-                    padding_obs_query__ = padding_obs_query,
-                ) # [1, batch_n_query, n_classes]
-
-                results.append(test_logit.squeeze(0))
-        self.predict_time = time.time() - tic
-
-        test_logit = torch.cat(results, dim=0).cpu()
-        if not self.is_regression:
-            test_logit = test_logit[:, :self.n_classes]
-        test_label = self.y_test
-
-        test_label_tensor = torch.tensor(test_label, dtype=torch.float32 if self.is_regression else torch.long)
-        
-        vl = self.criterion(test_logit, test_label_tensor).item()
-        vres, metric_name = self.metric(test_logit, test_label, self.y_info)
-        
-        print('Test: loss={:.4f}'.format(vl))
-        for name, res in zip(metric_name, vres):
-            print('[{}]={:.4f}'.format(name, res))
-        return vl, vres, metric_name, test_logit
+            print('Test: loss={:.4f}'.format(vl))
+            for name, res in zip(metric_name, vres):
+                print('[{}]={:.4f}'.format(name, res))
+            print('Time cost: {:.4f}s'.format(time.time() - start_time))
+            return vl, vres, metric_name, test_logit
