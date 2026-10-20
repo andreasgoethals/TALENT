@@ -472,11 +472,3 @@ If there are any questions, please feel free to propose new features by opening 
 [![Star History Chart](https://api.star-history.com/svg?repos=LAMDA-Tabular/TALENT&type=Date)](https://star-history.com/#LAMDA-Tabular/TALENT&Date)
 
 > Thanks [LAMDA-PILOT](https://github.com/LAMDA-CL/LAMDA-PILOT) and [LAMDA-ZhiJian](https://github.com/zhangyikaii/LAMDA-ZhiJian) for the template.
-
-
-## Shared VSC infrastructure reference
-
-This fork includes the independently maintained [VSC Library](vsc-library/README.md)
-as a read-only pinned submodule. Initialize it with
-`git submodule update --init -- vsc-library`; project-specific instructions belong
-in [docs/VSC.md](docs/VSC.md). TFM and DM libraries are not installed by this registration.

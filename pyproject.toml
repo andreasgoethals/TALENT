@@ -24,9 +24,3 @@ dependencies = [
     "scipy>=1.13.0",
     "torch>=2.8.0",
 ]
-
-[tool.pytest.ini_options]
-norecursedirs = ["vsc-library", ".git", ".venv"]
-
-[tool.ruff]
-extend-exclude = ["vsc-library"]
